@@ -1,0 +1,1823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Support Chat</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Animated Mesh Gradient Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(6, 182, 212, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 90% 70%, rgba(236, 72, 153, 0.15) 0%, transparent 50%);
+            animation: meshMove 20s ease infinite;
+            z-index: 0;
+        }
+
+        @keyframes meshMove {
+            0%, 100% { 
+                background-position: 0% 0%, 100% 0%, 50% 100%, 100% 100%;
+            }
+            50% { 
+                background-position: 100% 100%, 0% 100%, 0% 0%, 50% 50%;
+            }
+        }
+
+        .chat-container {
+            width: 100%;
+            max-width: 480px;
+            height: 95vh;
+            max-height: 900px;
+            background: rgba(17, 17, 17, 0.85);
+            backdrop-filter: blur(40px);
+            border-radius: 32px;
+            box-shadow: 
+                0 0 0 1px rgba(255, 255, 255, 0.05),
+                0 30px 80px rgba(0, 0, 0, 0.6),
+                0 0 60px rgba(59, 130, 246, 0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            position: relative;
+            z-index: 1;
+            animation: containerFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes containerFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        /* Header */
+        .chat-header {
+            background: linear-gradient(135deg, #1e1b4b 0%, #1e3a8a 100%);
+            color: white;
+            padding: 32px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.3);
+            box-shadow: 0 0 40px rgba(59, 130, 246, 0.2);
+        }
+
+        .chat-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 30% 50%, rgba(59, 130, 246, 0.2) 0%, transparent 60%),
+                radial-gradient(circle at 70% 50%, rgba(168, 85, 247, 0.2) 0%, transparent 60%);
+            animation: headerGlow 8s ease infinite;
+            pointer-events: none;
+        }
+
+        @keyframes headerGlow {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .support-icon {
+            width: 56px;
+            height: 56px;
+            background: rgba(17, 17, 17, 0.6);
+            backdrop-filter: blur(10px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            border: 2px solid transparent;
+            box-shadow: 
+                0 0 0 2px rgba(59, 130, 246, 0.6),
+                0 0 20px rgba(59, 130, 246, 0.4),
+                inset 0 0 20px rgba(59, 130, 246, 0.2);
+            position: relative;
+            animation: iconGlow 3s ease infinite;
+        }
+
+        @keyframes iconGlow {
+            0%, 100% { 
+                box-shadow: 
+                    0 0 0 2px rgba(59, 130, 246, 0.6),
+                    0 0 20px rgba(59, 130, 246, 0.4),
+                    inset 0 0 20px rgba(59, 130, 246, 0.2);
+            }
+            50% { 
+                box-shadow: 
+                    0 0 0 2px rgba(168, 85, 247, 0.6),
+                    0 0 30px rgba(168, 85, 247, 0.6),
+                    inset 0 0 20px rgba(168, 85, 247, 0.3);
+            }
+        }
+
+        .header-info h2 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            background: linear-gradient(135deg, #3b82f6 0%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            opacity: 0.9;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: statusPulse 2s ease-in-out infinite;
+            box-shadow: 
+                0 0 15px rgba(16, 185, 129, 1),
+                0 0 30px rgba(16, 185, 129, 0.5);
+            position: relative;
+        }
+
+        .status-dot::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            border: 2px solid rgba(16, 185, 129, 0.3);
+            animation: statusPing 2s ease-in-out infinite;
+        }
+
+        @keyframes statusPulse {
+            0%, 100% { 
+                opacity: 1; 
+                transform: scale(1); 
+            }
+            50% { 
+                opacity: 0.8; 
+                transform: scale(1.1); 
+            }
+        }
+
+        @keyframes statusPing {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(2);
+            }
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .header-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            color: rgba(255, 255, 255, 0.8);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.4), rgba(168, 85, 247, 0.4));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .header-btn:hover::before {
+            opacity: 1;
+        }
+
+        .header-btn:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+            border-color: rgba(59, 130, 246, 0.5);
+        }
+
+        .header-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Chat Messages Area */
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 32px 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            background: #0a0a0a;
+            position: relative;
+        }
+
+        .message {
+            display: flex;
+            gap: 16px;
+            animation: messageSlideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes messageSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.9);
+                filter: blur(4px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+                filter: blur(0);
+            }
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+            box-shadow: 
+                0 0 20px rgba(59, 130, 246, 0.4),
+                0 4px 12px rgba(0, 0, 0, 0.4);
+            border: 2px solid transparent;
+            background: linear-gradient(135deg, #1a1a1a, #252525) padding-box,
+                       linear-gradient(135deg, #3b82f6, #a855f7) border-box;
+            position: relative;
+        }
+
+        .message.bot .message-avatar {
+            animation: avatarGlow 3s ease infinite;
+        }
+
+        @keyframes avatarGlow {
+            0%, 100% { 
+                box-shadow: 
+                    0 0 20px rgba(59, 130, 246, 0.4),
+                    0 4px 12px rgba(0, 0, 0, 0.4);
+            }
+            50% { 
+                box-shadow: 
+                    0 0 30px rgba(168, 85, 247, 0.6),
+                    0 4px 16px rgba(0, 0, 0, 0.6);
+            }
+        }
+
+        .message.user .message-avatar {
+            background: linear-gradient(135deg, #1a1a1a, #252525) padding-box,
+                       linear-gradient(135deg, #ec4899, #f59e0b) border-box;
+            box-shadow: 
+                0 0 20px rgba(236, 72, 153, 0.4),
+                0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .message-content {
+            max-width: 75%;
+        }
+
+        .message-bubble {
+            padding: 18px 22px;
+            border-radius: 20px;
+            line-height: 1.7;
+            font-size: 15px;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+        }
+
+        .message.bot .message-bubble {
+            background: rgba(26, 26, 26, 0.8);
+            backdrop-filter: blur(20px);
+            color: #e5e5e5;
+            border-bottom-left-radius: 6px;
+            box-shadow: 
+                0 0 0 1px rgba(59, 130, 246, 0.3),
+                0 8px 24px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            border-left: 3px solid transparent;
+            border-image: linear-gradient(180deg, #3b82f6, #a855f7) 1;
+        }
+
+        .message.bot .message-bubble:hover {
+            box-shadow: 
+                0 0 0 1px rgba(59, 130, 246, 0.5),
+                0 12px 32px rgba(59, 130, 246, 0.2),
+                0 0 40px rgba(59, 130, 246, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px) translateX(4px);
+        }
+
+        .message.user .message-bubble {
+            background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+            color: white;
+            border-bottom-right-radius: 6px;
+            margin-left: auto;
+            box-shadow: 
+                0 8px 24px rgba(6, 182, 212, 0.3),
+                0 0 40px rgba(6, 182, 212, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .message.user .message-bubble:hover {
+            box-shadow: 
+                0 12px 32px rgba(6, 182, 212, 0.4),
+                0 0 50px rgba(6, 182, 212, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px) translateX(-4px);
+        }
+
+        .message-time {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.4);
+            margin-top: 6px;
+            padding: 0 4px;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+        }
+
+        .message.user .message-time {
+            text-align: right;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin-top: 20px;
+            animation: actionsStagger 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s backwards;
+        }
+
+        @keyframes actionsStagger {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .quick-action-btn {
+            padding: 14px 18px;
+            background: rgba(26, 26, 26, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #3b82f6;
+            border-radius: 16px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 
+                0 4px 16px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .quick-action-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(168, 85, 247, 0.2));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .quick-action-btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 16px;
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.6);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .quick-action-btn:hover::before {
+            opacity: 1;
+        }
+
+        .quick-action-btn:hover::after {
+            opacity: 0.6;
+        }
+
+        .quick-action-btn:hover {
+            color: #60a5fa;
+            border-color: rgba(59, 130, 246, 0.6);
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 
+                0 8px 24px rgba(59, 130, 246, 0.4),
+                0 0 40px rgba(59, 130, 246, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .quick-action-btn:active {
+            transform: translateY(-2px) scale(0.98);
+        }
+
+        /* Typing Indicator */
+        .typing-indicator {
+            display: none;
+            gap: 16px;
+            padding: 0 28px;
+            margin-bottom: 12px;
+            animation: messageSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .typing-indicator.active {
+            display: flex;
+        }
+
+        .typing-bubble {
+            background: rgba(26, 26, 26, 0.8);
+            backdrop-filter: blur(20px);
+            padding: 18px 22px;
+            border-radius: 20px;
+            border-bottom-left-radius: 6px;
+            box-shadow: 
+                0 0 0 1px rgba(59, 130, 246, 0.3),
+                0 8px 24px rgba(0, 0, 0, 0.4);
+            display: flex;
+            gap: 6px;
+            border-left: 3px solid transparent;
+            border-image: linear-gradient(180deg, #3b82f6, #a855f7) 1;
+        }
+
+        .typing-dot {
+            width: 10px;
+            height: 10px;
+            background: linear-gradient(135deg, #3b82f6, #a855f7);
+            border-radius: 50%;
+            animation: typingWave 1.4s infinite;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.6);
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typingWave {
+            0%, 60%, 100% {
+                transform: translateY(0);
+                opacity: 0.5;
+                box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+            }
+            30% {
+                transform: translateY(-12px);
+                opacity: 1;
+                box-shadow: 0 0 20px rgba(168, 85, 247, 0.8);
+            }
+        }
+
+        /* Chat Input */
+        .chat-input-area {
+            padding: 24px 28px 28px;
+            background: rgba(17, 17, 17, 0.95);
+            backdrop-filter: blur(40px);
+            border-top: 1px solid rgba(59, 130, 246, 0.2);
+            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            background: rgba(26, 26, 26, 0.8);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(59, 130, 246, 0.3);
+            border-radius: 24px;
+            padding: 8px 8px 8px 24px;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 
+                0 4px 16px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            position: relative;
+        }
+
+        .input-wrapper::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 24px;
+            padding: 2px;
+            background: linear-gradient(135deg, #3b82f6, #a855f7, #ec4899);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.4s;
+            animation: borderGlow 3s linear infinite;
+        }
+
+        @keyframes borderGlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .input-wrapper:focus-within::before {
+            opacity: 1;
+        }
+
+        .input-wrapper:focus-within {
+            box-shadow: 
+                0 8px 32px rgba(59, 130, 246, 0.4),
+                0 0 60px rgba(59, 130, 246, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            background: rgba(26, 26, 26, 0.95);
+        }
+
+        .chat-input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 10px 0;
+            font-size: 15px;
+            color: #e5e5e5;
+            outline: none;
+            font-weight: 500;
+            pointer-events: auto;
+            user-select: text;
+            -webkit-user-select: text;
+            cursor: text;
+        }
+
+        .chat-input::placeholder {
+            background: linear-gradient(135deg, #3b82f6, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            opacity: 0.5;
+        }
+
+        .send-btn {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #3b82f6 0%, #a855f7 100%);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            flex-shrink: 0;
+            box-shadow: 
+                0 0 30px rgba(59, 130, 246, 0.5),
+                0 4px 16px rgba(59, 130, 246, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .send-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), transparent);
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .send-btn::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6, #a855f7);
+            opacity: 0;
+            filter: blur(15px);
+            transition: opacity 0.3s;
+            z-index: -1;
+        }
+
+        .send-btn:hover::before {
+            opacity: 1;
+        }
+
+        .send-btn:hover::after {
+            opacity: 0.8;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.15) rotate(90deg);
+            box-shadow: 
+                0 0 50px rgba(168, 85, 247, 0.8),
+                0 8px 24px rgba(168, 85, 247, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4);
+        }
+
+        .send-btn:active {
+            transform: scale(0.95) rotate(0deg);
+        }
+
+        /* Scrollbar */
+        .chat-messages::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #3b82f6, #a855f7);
+            border-radius: 4px;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #60a5fa, #c084fc);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.6);
+        }
+
+        /* Order Status Styles */
+        .order-info {
+            background: rgba(26, 26, 26, 0.6);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 16px;
+            margin-top: 16px;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            box-shadow: 
+                0 4px 16px rgba(0, 0, 0, 0.4),
+                0 0 40px rgba(59, 130, 246, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .order-info::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(180deg, #3b82f6, #a855f7);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.6);
+        }
+
+        .order-info strong {
+            color: #60a5fa;
+            font-weight: 600;
+        }
+
+        /* Low Stock Badge */
+        .low-stock {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 12px;
+            color: #fbbf24;
+            font-size: 12px;
+            font-weight: 600;
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
+        }
+
+        /* Demo Controls */
+        .demo-controls {
+            background: rgba(17, 17, 17, 0.98);
+            backdrop-filter: blur(40px);
+            border-top: 1px solid rgba(236, 72, 153, 0.3);
+            padding: 20px 28px;
+            box-shadow: 0 -10px 40px rgba(236, 72, 153, 0.2);
+            animation: demoSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes demoSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .demo-controls-inner {
+            background: rgba(26, 26, 26, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(236, 72, 153, 0.3);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 
+                0 0 40px rgba(236, 72, 153, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .demo-controls-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            background: linear-gradient(135deg, rgba(236, 72, 153, 0.15), rgba(168, 85, 247, 0.15));
+            border-bottom: 1px solid rgba(236, 72, 153, 0.3);
+        }
+
+        .demo-close-btn {
+            width: 28px;
+            height: 28px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 6px;
+            color: rgba(255, 255, 255, 0.8);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: all 0.3s;
+        }
+
+        .demo-close-btn:hover {
+            background: rgba(236, 72, 153, 0.3);
+            color: #ec4899;
+            transform: scale(1.1);
+        }
+
+        .demo-controls-body {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .demo-control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .demo-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.8);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .demo-select {
+            padding: 12px 16px;
+            background: rgba(17, 17, 17, 0.8);
+            border: 1px solid rgba(236, 72, 153, 0.3);
+            border-radius: 10px;
+            color: #e5e5e5;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            outline: none;
+        }
+
+        .demo-select:hover {
+            border-color: rgba(236, 72, 153, 0.5);
+            background: rgba(17, 17, 17, 0.95);
+        }
+
+        .demo-select:focus {
+            border-color: #ec4899;
+            box-shadow: 0 0 20px rgba(236, 72, 153, 0.3);
+        }
+
+        .demo-slider {
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, #3b82f6, #a855f7, #ec4899);
+            border-radius: 3px;
+            outline: none;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+            cursor: pointer;
+        }
+
+        .demo-slider:hover {
+            opacity: 1;
+        }
+
+        .demo-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, #ec4899, #a855f7);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(236, 72, 153, 0.6);
+        }
+
+        .demo-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, #ec4899, #a855f7);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(236, 72, 153, 0.6);
+            border: none;
+        }
+
+        .speed-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 4px;
+        }
+
+        .demo-control-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .demo-control-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .demo-control-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .demo-control-btn:hover::before {
+            opacity: 1;
+        }
+
+        .demo-play {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4);
+        }
+
+        .demo-play::before {
+            background: linear-gradient(135deg, #34d399, #10b981);
+        }
+
+        .demo-play:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.5);
+        }
+
+        .demo-pause {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            box-shadow: 0 4px 16px rgba(245, 158, 11, 0.4);
+        }
+
+        .demo-pause::before {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        }
+
+        .demo-pause:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(245, 158, 11, 0.5);
+        }
+
+        .demo-stop {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4);
+        }
+
+        .demo-stop::before {
+            background: linear-gradient(135deg, #f87171, #ef4444);
+        }
+
+        .demo-stop:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.5);
+        }
+
+        .demo-control-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 0;
+            }
+
+            .chat-container {
+                height: 100vh;
+                max-height: 100vh;
+                border-radius: 0;
+                max-width: 100%;
+            }
+
+            .chat-messages {
+                padding: 24px 20px;
+            }
+
+            .chat-input-area {
+                padding: 20px;
+            }
+
+            .message-content {
+                max-width: 85%;
+            }
+
+            .quick-actions {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <!-- Header -->
+        <div class="chat-header">
+            <div class="header-left">
+                <div class="support-icon">💬</div>
+                <div class="header-info">
+                    <h2>AI Support</h2>
+                    <div class="status">
+                        <span class="status-dot"></span>
+                        <span id="statusText">Online • Response time: &lt;1s</span>
+                        <span id="demoModeBadge" style="display: none; margin-left: 12px; padding: 4px 12px; background: rgba(236, 72, 153, 0.25); border: 1px solid rgba(236, 72, 153, 0.5); border-radius: 12px; font-size: 11px; font-weight: 700; color: #ec4899; box-shadow: 0 0 15px rgba(236, 72, 153, 0.3);">🎬 DEMO MODE</span>
+                    </div>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="header-btn" id="demoBtn" title="Run Demo Flow" style="width: auto; padding: 0 16px; gap: 8px; font-size: 14px; font-weight: 600;">
+                    <span>▶</span>
+                    <span style="font-size: 13px;">Demo</span>
+                </button>
+                <button class="header-btn" title="Minimize">−</button>
+                <button class="header-btn" title="Close">×</button>
+            </div>
+        </div>
+
+        <!-- Chat Messages -->
+        <div class="chat-messages" id="chatMessages"></div>
+
+        <!-- Demo Controls -->
+        <div class="demo-controls" id="demoControls" style="display: none;">
+            <div class="demo-controls-inner">
+                <div class="demo-controls-header">
+                    <span style="font-weight: 600; color: #ec4899;">🎬 Demo Controls</span>
+                    <button class="demo-close-btn" id="closeDemoControls" title="Close">×</button>
+                </div>
+                <div class="demo-controls-body">
+                    <div class="demo-control-group">
+                        <label class="demo-label">Select Demo Flow:</label>
+                        <select id="demoFlowSelect" class="demo-select">
+                            <option value="orderTracking">📦 Order Tracking Demo</option>
+                            <option value="returns">🔄 Returns Process Demo</option>
+                            <option value="passwordReset">🔐 Password Reset Demo</option>
+                            <option value="paymentIssue">💳 Payment Issue Demo</option>
+                            <option value="fullFeature">✨ Full Feature Demo (All)</option>
+                        </select>
+                    </div>
+                    <div class="demo-control-group">
+                        <label class="demo-label">Demo Speed: <span id="speedValue">1.0x</span></label>
+                        <input type="range" id="demoSpeed" class="demo-slider" min="0.5" max="3" step="0.5" value="1">
+                        <div class="speed-labels">
+                            <span>0.5x</span>
+                            <span>1.5x</span>
+                            <span>3x</span>
+                        </div>
+                    </div>
+                    <div class="demo-control-buttons">
+                        <button class="demo-control-btn demo-play" id="playDemo">
+                            <span>▶</span>
+                            <span>Play Demo</span>
+                        </button>
+                        <button class="demo-control-btn demo-pause" id="pauseDemo" style="display: none;">
+                            <span>⏸</span>
+                            <span>Pause</span>
+                        </button>
+                        <button class="demo-control-btn demo-stop" id="stopDemo">
+                            <span>⏹</span>
+                            <span>Stop Demo</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Typing Indicator -->
+        <div class="typing-indicator" id="typingIndicator">
+            <div class="message-avatar">🤖</div>
+            <div class="typing-bubble">
+                <span class="typing-dot"></span>
+                <span class="typing-dot"></span>
+                <span class="typing-dot"></span>
+            </div>
+        </div>
+
+        <!-- Chat Input -->
+        <div class="chat-input-area">
+            <div class="input-wrapper">
+                <input 
+                    type="text" 
+                    class="chat-input" 
+                    id="chatInput" 
+                    placeholder="Type your message..."
+                    autocomplete="off"
+                >
+                <button class="send-btn" id="sendBtn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Demo Flow Data
+        const DEMO_FLOWS = {
+            orderTracking: [
+                { type: 'user', text: 'Track my order', delay: 1500 },
+                { type: 'bot', text: "Got it! Let me pull up your order 🔍<br><br>Drop your order number below<br>→ Format: #12345 or ORD-12345", delay: 2000 },
+                { type: 'user', text: '12345', delay: 1500 },
+                { type: 'bot', text: "Found it! Here's your order status ✨<br><br>┏━━━━━━━━━━━━━━━━━━━┓<br>┃  📦 Order #12345    ┃<br>┗━━━━━━━━━━━━━━━━━━━┛<br><br>✓ Status: Out for Delivery<br>🚚 Carrier: FedEx Express<br>📍 Location: Your Local Hub<br>⏰ ETA: Today, 8:00 PM<br>🔔 Last Update: 2 hours ago<br><br>Your package is on the way! 🎉<br><br>Need anything else?", delay: 2500 },
+                { type: 'user', text: 'Thanks!', delay: 1500 },
+                { type: 'bot', text: "You're welcome! I'm here 24/7 if you need anything else 😊", delay: 1500 }
+            ],
+            returns: [
+                { type: 'user', text: 'I want to return an item', delay: 1500 },
+                { type: 'bot', text: "I can help you with that! 🔄<br><br>━━━━━━━━━━━━━━━━━━━<br>Our Return Policy:<br>✓ 30-day hassle-free returns<br>✓ Free return shipping<br>✓ Full refund guaranteed<br>━━━━━━━━━━━━━━━━━━━<br><br>What's your order number?", delay: 2000 },
+                { type: 'user', text: '12346', delay: 1500 },
+                { type: 'bot', text: "Perfect! I've processed your return request ✨<br><br>📦 Return for Order #12346<br><br>📋 Next Steps:<br>1. Pack items in original packaging<br>2. Print return label (sent to email)<br>3. Drop off at any FedEx location<br>4. Refund processed within 3-5 days<br><br>✅ Return label sent to your email!<br><br>Anything else I can help with?", delay: 2500 },
+                { type: 'user', text: "That's all, thanks", delay: 1500 },
+                { type: 'bot', text: 'Happy to help! Have a great day! ✨', delay: 1500 }
+            ],
+            passwordReset: [
+                { type: 'user', text: 'I forgot my password', delay: 1500 },
+                { type: 'bot', text: "No worries! I'll help you reset it 🔐<br><br>━━━━━━━━━━━━━━━━━━━<br>Password Reset Steps:<br>━━━━━━━━━━━━━━━━━━━<br><br>1️⃣ Go to login page<br>2️⃣ Click 'Forgot Password'<br>3️⃣ Enter your email<br>4️⃣ Check email for reset link<br>5️⃣ Create new password<br><br>⏰ Reset link arrives in &lt;5 minutes<br>📧 Check spam folder if needed<br><br>Need me to send the reset link now?", delay: 2500 },
+                { type: 'user', text: 'Yes please', delay: 1500 },
+                { type: 'bot', text: '✅ Reset link sent to your email!<br><br>You should receive it within the next 2-3 minutes.<br><br>Is there anything else I can assist you with?', delay: 2000 },
+                { type: 'user', text: "No, that's it", delay: 1500 },
+                { type: 'bot', text: 'Great! Let me know if you need any more help 👋', delay: 1500 }
+            ],
+            paymentIssue: [
+                { type: 'user', text: 'My payment failed', delay: 1500 },
+                { type: 'bot', text: "I'm sorry to hear that! Let me help troubleshoot 💳<br><br>━━━━━━━━━━━━━━━━━━━<br>Common Solutions:<br>━━━━━━━━━━━━━━━━━━━<br><br>✓ Check card details are correct<br>✓ Ensure sufficient funds<br>✓ Verify billing address matches<br>✓ Check with your bank for blocks<br><br>Would you like to try the payment again?", delay: 2500 },
+                { type: 'user', text: 'Yes, let me retry', delay: 1500 },
+                { type: 'bot', text: 'Great! Processing your payment now...<br><br>⏳ Please wait...<br><br>✨ Success! Payment processed!<br><br>💳 Amount: $149.99<br>📧 Confirmation sent to email<br><br>Your order is being prepared! 🎉', delay: 3000 },
+                { type: 'user', text: 'Perfect, thank you!', delay: 1500 },
+                { type: 'bot', text: "You're very welcome! Enjoy your purchase! 😊", delay: 1500 }
+            ]
+        };
+
+        // Demo State
+        let demoState = {
+            isRunning: false,
+            isPaused: false,
+            currentFlow: null,
+            currentStep: 0,
+            speed: 1.0,
+            timeouts: []
+        };
+
+        // Sample Data
+        const SAMPLE_ORDERS = {
+            '12345': {
+                status: 'Out for Delivery',
+                expected: 'Today by 8:00 PM',
+                carrier: 'FedEx',
+                tracking: 'FDX9876543210'
+            },
+            '12346': {
+                status: 'Delivered',
+                delivered_date: 'October 25, 2025',
+                location: 'Front Porch'
+            },
+            '12347': {
+                status: 'In Transit',
+                expected: 'October 30, 2025',
+                carrier: 'UPS',
+                current_location: 'Distribution Center - Chicago'
+            },
+            '12348': {
+                status: 'Processing',
+                expected: 'Ships October 28, 2025'
+            },
+            '12349': {
+                status: 'Delayed',
+                expected: 'November 2, 2025 (was October 28)',
+                reason: 'Weather conditions'
+            }
+        };
+
+        const COMPANY_INFO = {
+            phone: '1-800-SUPPORT',
+            email: 'support@company.com',
+            hours: 'Monday-Friday, 9:00 AM - 6:00 PM EST',
+            return_policy: '30 days from purchase',
+            shipping_time: '3-5 business days'
+        };
+
+        const QUICK_ACTIONS = [
+            '📦 Track Order',
+            '🔄 Returns & Refunds',
+            '👤 Account Help',
+            '💳 Payment Support',
+            '🛍️ Product Info',
+            '💬 Live Agent'
+        ];
+
+        // State
+        let conversationState = {
+            awaitingOrderNumber: false,
+            awaitingReturnInfo: false,
+            lastIntent: null
+        };
+
+        // DOM Elements
+        const chatMessages = document.getElementById('chatMessages');
+        const chatInput = document.getElementById('chatInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const typingIndicator = document.getElementById('typingIndicator');
+
+        // Demo Flow Functions
+        function startDemo() {
+            const flowType = document.getElementById('demoFlowSelect').value;
+            
+            // Clear chat for fresh demo
+            chatMessages.innerHTML = '';
+            
+            // Reset state
+            conversationState = {
+                awaitingOrderNumber: false,
+                awaitingReturnInfo: false,
+                lastIntent: null
+            };
+            
+            // Show demo controls and badge
+            document.getElementById('demoControls').style.display = 'block';
+            document.getElementById('demoModeBadge').style.display = 'inline-block';
+            document.getElementById('playDemo').style.display = 'none';
+            document.getElementById('pauseDemo').style.display = 'flex';
+            
+            // Set demo state
+            demoState.isRunning = true;
+            demoState.isPaused = false;
+            demoState.currentStep = 0;
+            
+            // Get flows to run
+            let flowsToRun = [];
+            if (flowType === 'fullFeature') {
+                flowsToRun = [
+                    ...DEMO_FLOWS.orderTracking,
+                    { type: 'pause', delay: 2000 },
+                    ...DEMO_FLOWS.returns,
+                    { type: 'pause', delay: 2000 },
+                    ...DEMO_FLOWS.passwordReset,
+                    { type: 'pause', delay: 2000 },
+                    ...DEMO_FLOWS.paymentIssue
+                ];
+            } else {
+                flowsToRun = DEMO_FLOWS[flowType];
+            }
+            
+            demoState.currentFlow = flowsToRun;
+            
+            // Start executing flow
+            executeDemoStep();
+        }
+        
+        function executeDemoStep() {
+            if (!demoState.isRunning || demoState.isPaused || demoState.currentStep >= demoState.currentFlow.length) {
+                if (demoState.currentStep >= demoState.currentFlow.length) {
+                    endDemo();
+                }
+                return;
+            }
+            
+            const step = demoState.currentFlow[demoState.currentStep];
+            const adjustedDelay = step.delay / demoState.speed;
+            
+            if (step.type === 'pause') {
+                const timeout = setTimeout(() => {
+                    demoState.currentStep++;
+                    executeDemoStep();
+                }, adjustedDelay);
+                demoState.timeouts.push(timeout);
+                return;
+            }
+            
+            const timeout = setTimeout(() => {
+                if (!demoState.isRunning || demoState.isPaused) return;
+                
+                if (step.type === 'user') {
+                    addMessage(step.text, true);
+                    demoState.currentStep++;
+                    executeDemoStep();
+                } else if (step.type === 'bot') {
+                    showTypingIndicator();
+                    const typingTimeout = setTimeout(() => {
+                        if (!demoState.isRunning || demoState.isPaused) return;
+                        hideTypingIndicator();
+                        addMessage(step.text, false);
+                        demoState.currentStep++;
+                        executeDemoStep();
+                    }, 1000 / demoState.speed);
+                    demoState.timeouts.push(typingTimeout);
+                }
+            }, adjustedDelay);
+            
+            demoState.timeouts.push(timeout);
+        }
+        
+        function pauseDemo() {
+            demoState.isPaused = true;
+            document.getElementById('playDemo').style.display = 'flex';
+            document.getElementById('playDemo').innerHTML = '<span>▶</span><span>Resume</span>';
+            document.getElementById('pauseDemo').style.display = 'none';
+            hideTypingIndicator();
+        }
+        
+        function resumeDemo() {
+            demoState.isPaused = false;
+            document.getElementById('playDemo').style.display = 'none';
+            document.getElementById('pauseDemo').style.display = 'flex';
+            executeDemoStep();
+        }
+        
+        function stopDemo() {
+            // Clear all timeouts
+            demoState.timeouts.forEach(timeout => clearTimeout(timeout));
+            demoState.timeouts = [];
+            
+            // Reset state
+            demoState.isRunning = false;
+            demoState.isPaused = false;
+            demoState.currentStep = 0;
+            demoState.currentFlow = null;
+            
+            // Hide demo elements
+            document.getElementById('demoControls').style.display = 'none';
+            document.getElementById('demoModeBadge').style.display = 'none';
+            document.getElementById('playDemo').style.display = 'flex';
+            document.getElementById('playDemo').innerHTML = '<span>▶</span><span>Play Demo</span>';
+            document.getElementById('pauseDemo').style.display = 'none';
+            
+            // Clear chat and show welcome
+            chatMessages.innerHTML = '';
+            hideTypingIndicator();
+            
+            setTimeout(() => {
+                const welcomeMsg = `<div style="margin-bottom: 12px;">
+                    👋 <strong>Hey there! Welcome to AI Support.</strong>
+                </div>
+                <div style="margin-bottom: 16px; color: rgba(255, 255, 255, 0.7); line-height: 1.8;">
+                    I'm here to help you 24/7 with lightning-fast responses ⚡
+                </div>
+                <div style="padding: 16px; background: rgba(59, 130, 246, 0.1); border-radius: 12px; border: 1px solid rgba(59, 130, 246, 0.2); margin-top: 16px;">
+                    <div style="font-weight: 600; margin-bottom: 8px; color: #60a5fa;">What brings you here?</div>
+                    <div style="font-size: 13px; color: rgba(255, 255, 255, 0.6);">Choose an option below or just type your question</div>
+                </div>`;
+                addMessage(welcomeMsg, false, QUICK_ACTIONS);
+            }, 300);
+        }
+        
+        function endDemo() {
+            setTimeout(() => {
+                const endMsg = `<div style="padding: 20px; background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(59, 130, 246, 0.2)); border-radius: 16px; border: 1px solid rgba(16, 185, 129, 0.3); text-align: center;">
+                    <div style="font-size: 24px; margin-bottom: 12px;">🎉</div>
+                    <div style="font-weight: 600; font-size: 16px; margin-bottom: 8px; color: #10b981;">Demo Complete!</div>
+                    <div style="font-size: 14px; color: rgba(255, 255, 255, 0.7);">Thanks for watching! Feel free to try the chatbot yourself or run another demo.</div>
+                </div>`;
+                addMessage(endMsg, false, ['Try it myself', 'Run another demo', 'Close demo']);
+                
+                demoState.isRunning = false;
+                document.getElementById('playDemo').style.display = 'flex';
+                document.getElementById('playDemo').innerHTML = '<span>▶</span><span>Play Demo</span>';
+                document.getElementById('pauseDemo').style.display = 'none';
+            }, 1500);
+        }
+
+        // Utility Functions
+        function getCurrentTime() {
+            const now = new Date();
+            return now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+        }
+
+        function scrollToBottom() {
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function showTypingIndicator() {
+            typingIndicator.classList.add('active');
+            scrollToBottom();
+        }
+
+        function hideTypingIndicator() {
+            typingIndicator.classList.remove('active');
+        }
+
+        // Message Rendering
+        function addMessage(text, isUser = false, quickActions = null) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user' : 'bot'}`;
+
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            avatar.textContent = isUser ? '👤' : '🤖';
+
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+
+            const bubble = document.createElement('div');
+            bubble.className = 'message-bubble';
+            bubble.innerHTML = text;
+
+            const time = document.createElement('div');
+            time.className = 'message-time';
+            time.textContent = getCurrentTime();
+
+            contentDiv.appendChild(bubble);
+            contentDiv.appendChild(time);
+
+            if (quickActions && !isUser) {
+                const actionsDiv = document.createElement('div');
+                actionsDiv.className = 'quick-actions';
+                quickActions.forEach(action => {
+                    const btn = document.createElement('button');
+                    btn.className = 'quick-action-btn';
+                    btn.textContent = action;
+                    btn.onclick = () => handleUserInput(action);
+                    actionsDiv.appendChild(btn);
+                });
+                contentDiv.appendChild(actionsDiv);
+            }
+
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(contentDiv);
+            chatMessages.appendChild(messageDiv);
+
+            scrollToBottom();
+        }
+
+        // Intent Detection
+        function detectIntent(input) {
+            const lower = input.toLowerCase();
+
+            // Check if awaiting order number
+            if (conversationState.awaitingOrderNumber) {
+                const orderNum = input.match(/\d{5}/);
+                if (orderNum) {
+                    return { type: 'order_number', orderNum: orderNum[0] };
+                }
+            }
+
+            // Check if awaiting return info
+            if (conversationState.awaitingReturnInfo) {
+                const orderNum = input.match(/\d{5}/);
+                if (orderNum) {
+                    return { type: 'return_order_number', orderNum: orderNum[0] };
+                }
+            }
+
+            // Greetings
+            if (/^(hi|hello|hey|good morning|good afternoon|good evening)/.test(lower)) {
+                return { type: 'greeting' };
+            }
+
+            // Track order
+            if (/(track|order|delivery|shipping|where is my|status of)/.test(lower)) {
+                const orderNum = input.match(/\d{5}/);
+                if (orderNum) {
+                    return { type: 'track_order', orderNum: orderNum[0] };
+                }
+                return { type: 'track_order_init' };
+            }
+
+            // Returns/Refunds
+            if (/(return|refund|exchange|send back|wrong item)/.test(lower)) {
+                return { type: 'return_init' };
+            }
+
+            // Account issues
+            if (/(account|password|login|email|phone|update|profile|reset)/.test(lower)) {
+                if (/(password|forgot|reset|can't login)/.test(lower)) {
+                    return { type: 'password_reset' };
+                }
+                return { type: 'account_help' };
+            }
+
+            // Payment issues
+            if (/(payment|charge|billing|credit card|failed|decline|transaction)/.test(lower)) {
+                return { type: 'payment_help' };
+            }
+
+            // Product inquiry
+            if (/(product|item|price|available|buy|purchase|specifications|specs)/.test(lower)) {
+                return { type: 'product_inquiry' };
+            }
+
+            // Speak to agent
+            if (/(agent|human|person|representative|speak|talk|live support)/.test(lower)) {
+                return { type: 'speak_to_agent' };
+            }
+
+            // Thanks
+            if (/(thank|thanks|appreciate)/.test(lower)) {
+                return { type: 'thanks' };
+            }
+
+            return { type: 'unknown' };
+        }
+
+        // Response Generation
+        function generateResponse(intent) {
+            switch (intent.type) {
+                case 'greeting':
+                    return {
+                        text: `<div style="margin-bottom: 12px;">👋 <strong>Hi! Great to see you!</strong></div>
+                        <div style="color: rgba(255, 255, 255, 0.7);">I'm your AI support assistant. How can I help you today?</div>`,
+                        quickActions: QUICK_ACTIONS
+                    };
+
+                case 'track_order_init':
+                    conversationState.awaitingOrderNumber = true;
+                    conversationState.lastIntent = 'track_order';
+                    return {
+                        text: `<div style="margin-bottom: 12px;">Got it! Let me pull up your order 🔍</div>
+                        <div style="color: rgba(255, 255, 255, 0.7);">Drop your order number below</div>
+                        <div style="margin-top: 8px; color: #60a5fa; font-size: 13px;">→ Format: #12345 or ORD-12345</div>`
+                    };
+
+                case 'order_number':
+                case 'track_order':
+                    conversationState.awaitingOrderNumber = false;
+                    const orderNum = intent.orderNum;
+                    const order = SAMPLE_ORDERS[orderNum];
+
+                    if (order) {
+                        let statusEmoji = '📦';
+                        let statusColor = '#10b981';
+
+                        if (order.status === 'Delivered') statusEmoji = '✅';
+                        else if (order.status === 'Out for Delivery') statusEmoji = '🚚';
+                        else if (order.status === 'Delayed') { statusEmoji = '⚠️'; statusColor = '#f59e0b'; }
+
+                        let response = `Thanks! Let me check that for you...<br><br>`;
+                        response += `<div class="order-info">`;
+                        response += `${statusEmoji} <strong>Order #${orderNum}</strong><br>`;
+                        response += `<strong>Status:</strong> ${order.status}<br>`;
+
+                        if (order.expected) {
+                            response += `<strong>Expected:</strong> ${order.expected}<br>`;
+                        }
+                        if (order.delivered_date) {
+                            response += `<strong>Delivered:</strong> ${order.delivered_date}<br>`;
+                            response += `<strong>Location:</strong> ${order.location}<br>`;
+                        }
+                        if (order.carrier) {
+                            response += `<strong>Carrier:</strong> ${order.carrier}<br>`;
+                        }
+                        if (order.tracking) {
+                            response += `<strong>Tracking:</strong> ${order.tracking}<br>`;
+                        }
+                        if (order.current_location) {
+                            response += `<strong>Current Location:</strong> ${order.current_location}<br>`;
+                        }
+                        if (order.reason) {
+                            response += `<strong>Reason:</strong> ${order.reason}<br>`;
+                        }
+
+                        response += `</div><br>`;
+
+                        response += `</div><br>`;
+
+                        if (order.status === 'Out for Delivery') {
+                            response += `<div style="padding: 12px; background: rgba(16, 185, 129, 0.15); border-radius: 10px; border: 1px solid rgba(16, 185, 129, 0.3); margin-top: 12px;">
+                                <div style="color: #10b981; font-weight: 600;">🎉 Your package is on the way!</div>
+                                <div style="font-size: 13px; color: rgba(255, 255, 255, 0.6); margin-top: 4px;">You should receive it shortly</div>
+                            </div>`;
+                        } else if (order.status === 'Delivered') {
+                            response += `<div style="padding: 12px; background: rgba(16, 185, 129, 0.15); border-radius: 10px; border: 1px solid rgba(16, 185, 129, 0.3); margin-top: 12px;">
+                                <div style="color: #10b981; font-weight: 600;">✅ Delivered successfully!</div>
+                                <div style="font-size: 13px; color: rgba(255, 255, 255, 0.6); margin-top: 4px;">Your order has been completed</div>
+                            </div>`;
+                        }
+
+                        response += `<br><div style="color: rgba(255, 255, 255, 0.7); font-size: 14px; margin-top: 12px;">Need anything else? I'm here!</div>`;
+
+                        return {
+                            text: response,
+                            quickActions: ['Return an item', 'Track another order', 'Speak to agent']
+                        };
+                    } else {
+                        return {
+                            text: `<div style="padding: 16px; background: rgba(239, 68, 68, 0.15); border-radius: 12px; border: 1px solid rgba(239, 68, 68, 0.3);">
+                                <div style="color: #f87171; font-weight: 600; margin-bottom: 8px;">⚠️ Order not found</div>
+                                <div style="font-size: 14px; color: rgba(255, 255, 255, 0.7);">I couldn't find order #${orderNum}. Please double-check the number in your confirmation email.</div>
+                            </div>`,
+                            quickActions: ['Try again', 'Contact support']
+                        };
+                    }
+
+                case 'return_init':
+                    conversationState.awaitingReturnInfo = true;
+                    conversationState.lastIntent = 'return';
+                    return {
+                        text: `<div style="margin-bottom: 12px;">🔄 <strong>I can help you with returns!</strong></div>
+                        <div style="padding: 16px; background: rgba(59, 130, 246, 0.1); border-radius: 12px; border: 1px solid rgba(59, 130, 246, 0.2); margin-top: 12px;">
+                            <div style="font-weight: 600; color: #60a5fa; margin-bottom: 12px;">✨ Return Policy</div>
+                            <div style="font-size: 14px; color: rgba(255, 255, 255, 0.7); margin-bottom: 12px;">${COMPANY_INFO.return_policy}</div>
+                            <div style="font-size: 13px; color: rgba(255, 255, 255, 0.6);">To get started, I'll need:<br>• Your order number<br>• Reason for return</div>
+                        </div>
+                        <div style="margin-top: 16px; color: rgba(255, 255, 255, 0.8);">What's your order number?</div>`
+                    };
+
+                case 'return_order_number':
+                    conversationState.awaitingReturnInfo = false;
+                    return {
+                        text: `<div style="margin-bottom: 12px;">✅ <strong>Found your order #${intent.orderNum}!</strong></div>
+                        <div style="padding: 18px; background: rgba(59, 130, 246, 0.1); border-radius: 12px; border: 1px solid rgba(59, 130, 246, 0.2); margin-top: 16px;">
+                            <div style="font-weight: 600; color: #60a5fa; margin-bottom: 12px;">📦 Return Instructions</div>
+                            <div style="font-size: 14px; color: rgba(255, 255, 255, 0.7); line-height: 1.8;">
+                                <strong>1.</strong> Pack item(s) in original packaging<br>
+                                <strong>2.</strong> Print prepaid return label (check email)<br>
+                                <strong>3.</strong> Drop off at any ${SAMPLE_ORDERS[intent.orderNum]?.carrier || 'carrier'} location<br>
+                                <strong>4.</strong> Refund within 5-7 business days
+                            </div>
+                        </div>
+                        <div style="margin-top: 16px; padding: 12px; background: rgba(16, 185, 129, 0.15); border-radius: 10px; border: 1px solid rgba(16, 185, 129, 0.3);">
+                            <div style="color: #10b981; font-size: 13px;">✉️ Return label sent to your email!</div>
+                        </div>
+                        <div style="margin-top: 16px; color: rgba(255, 255, 255, 0.7);">Anything else I can help with?</div>`,
+                        quickActions: ['Track a shipment', 'Contact support', 'Return policy details']
+                    };
+
+                case 'password_reset':
+                    return {
+                        text: `No problem! Here\'s how to reset your password:<br><br>1. Go to the login page<br>2. Click "Forgot Password"<br>3. Enter your email address<br>4. Check your email for reset link<br>5. Create a new password<br><br>The reset link will arrive within 5 minutes. If you don\'t see it, check your spam folder.<br><br>Would you like help with anything else?`,
+                        quickActions: ['Update email', 'Account settings', 'Security tips']
+                    };
+
+                case 'account_help':
+                    return {
+                        text: `I can help you with account-related issues:<br><br>• <strong>Update email/phone:</strong> Go to Account Settings → Profile<br>• <strong>Change password:</strong> Account Settings → Security<br>• <strong>Update address:</strong> Account Settings → Shipping Addresses<br>• <strong>Payment methods:</strong> Account Settings → Payment Options<br><br>What would you like to update?`,
+                        quickActions: ['Reset password', 'Update email', 'Manage addresses']
+                    };
+
+                case 'payment_help':
+                    return {
+                        text: `I can help with payment issues. Common solutions:<br><br><strong>Failed Payment:</strong><br>• Verify card details are correct<br>• Check if card has sufficient funds<br>• Try a different payment method<br><br><strong>Update Payment Method:</strong><br>• Go to Account Settings → Payment Options<br>• Add or edit your payment information<br><br><strong>Billing Questions:</strong><br>• View order history for charges<br>• Contact ${COMPANY_INFO.email} for disputes<br><br>What specific issue are you experiencing?`,
+                        quickActions: ['Update payment method', 'View billing history', 'Contact support']
+                    };
+
+                case 'product_inquiry':
+                    return {
+                        text: `I\'d be happy to help with product information!<br><br>I can assist you with:<br>• Product availability<br>• Pricing and promotions<br>• Specifications and features<br>• Product recommendations<br>• Comparison between items<br><br>What product are you interested in? You can provide a product name, category, or what you\'re looking for.`,
+                        quickActions: ['View catalog', 'Current promotions', 'Best sellers']
+                    };
+
+                case 'speak_to_agent':
+                    return {
+                        text: `I understand you\'d like to speak with a live agent. Our customer service team is available:<br><br>📞 <strong>Phone:</strong> ${COMPANY_INFO.phone}<br>⏰ <strong>Hours:</strong> ${COMPANY_INFO.hours}<br>📧 <strong>Email:</strong> ${COMPANY_INFO.email}<br><br>Average wait time: 5-10 minutes<br><br>Would you like me to connect you to an agent now? (Note: This is a demo, so live agent transfer isn\'t available)`,
+                        quickActions: ['Send email instead', 'Continue with bot', 'View FAQs']
+                    };
+
+                case 'thanks':
+                    return {
+                        text: `You\'re welcome! 😊 I\'m glad I could help. Is there anything else you need assistance with?`,
+                        quickActions: ['Track order', 'Return item', 'No, thank you']
+                    };
+
+                default:
+                    return {
+                        text: `I\'m not sure I understood that. I can help you with:<br><br>• Tracking orders<br>• Processing returns<br>• Account issues<br>• Payment problems<br>• Product information<br>• Speaking to a live agent<br><br>How can I assist you?`,
+                        quickActions: QUICK_ACTIONS
+                    };
+            }
+        }
+
+        // Handle User Input
+        function handleUserInput(message) {
+            if (!message.trim()) return;
+
+            // Add user message
+            addMessage(message, true);
+
+            // Clear input
+            chatInput.value = '';
+
+            // Show typing indicator
+            showTypingIndicator();
+
+            // Simulate processing delay
+            setTimeout(() => {
+                hideTypingIndicator();
+
+                // Detect intent and generate response
+                const intent = detectIntent(message);
+                const response = generateResponse(intent);
+
+                // Add bot response
+                addMessage(response.text, false, response.quickActions);
+            }, 1000);
+        }
+
+        // Event Listeners - Ensure DOM is ready
+        function initializeEventListeners() {
+            // Send button click
+            sendBtn.addEventListener('click', () => {
+                const text = chatInput.value.trim();
+                if (text) {
+                    // Stop demo if user sends message
+                    if (demoState.isRunning) {
+                        stopDemo();
+                    }
+                    handleUserInput(text);
+                    chatInput.value = '';
+                    chatInput.focus();
+                }
+            });
+
+            // Enter key to send (but not Shift+Enter)
+            chatInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    const text = chatInput.value.trim();
+                    if (text) {
+                        // Stop demo if user sends message
+                        if (demoState.isRunning) {
+                            stopDemo();
+                        }
+                        handleUserInput(text);
+                        chatInput.value = '';
+                        chatInput.focus();
+                    }
+                }
+            });
+
+            console.log('Event listeners initialized successfully');
+        }
+
+        // Demo Control Event Listeners
+        document.getElementById('demoBtn').addEventListener('click', () => {
+            if (document.getElementById('demoControls').style.display === 'none') {
+                document.getElementById('demoControls').style.display = 'block';
+            } else {
+                startDemo();
+            }
+        });
+
+        document.getElementById('closeDemoControls').addEventListener('click', () => {
+            if (!demoState.isRunning) {
+                document.getElementById('demoControls').style.display = 'none';
+            }
+        });
+
+        document.getElementById('playDemo').addEventListener('click', () => {
+            if (demoState.isPaused) {
+                resumeDemo();
+            } else {
+                startDemo();
+            }
+        });
+
+        document.getElementById('pauseDemo').addEventListener('click', () => {
+            pauseDemo();
+        });
+
+        document.getElementById('stopDemo').addEventListener('click', () => {
+            stopDemo();
+        });
+
+        document.getElementById('demoSpeed').addEventListener('input', (e) => {
+            demoState.speed = parseFloat(e.target.value);
+            document.getElementById('speedValue').textContent = demoState.speed.toFixed(1) + 'x';
+        });
+
+        document.getElementById('demoFlowSelect').addEventListener('change', () => {
+            if (demoState.isRunning) {
+                stopDemo();
+            }
+        });
+
+        // Initial Welcome Message and Setup
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM loaded, initializing chatbot...');
+            
+            // Initialize event listeners
+            initializeEventListeners();
+            
+            // Focus on input field
+            setTimeout(() => {
+                chatInput.focus();
+            }, 100);
+            
+            // Show welcome message
+            setTimeout(() => {
+                const welcomeMsg = `<div style="margin-bottom: 12px;">
+                    👋 <strong>Hey there! Welcome to AI Support.</strong>
+                </div>
+                <div style="margin-bottom: 16px; color: rgba(255, 255, 255, 0.7); line-height: 1.8;">
+                    I'm here to help you 24/7 with lightning-fast responses ⚡
+                </div>
+                <div style="padding: 16px; background: rgba(59, 130, 246, 0.1); border-radius: 12px; border: 1px solid rgba(59, 130, 246, 0.2); margin-top: 16px;">
+                    <div style="font-weight: 600; margin-bottom: 8px; color: #60a5fa;">What brings you here?</div>
+                    <div style="font-size: 13px; color: rgba(255, 255, 255, 0.6);">Choose an option below or just type your question</div>
+                </div>`;
+                addMessage(welcomeMsg, false, QUICK_ACTIONS);
+            }, 600);
+        });
+    </script>
+</body>
+</html>
